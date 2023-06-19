@@ -1,72 +1,74 @@
 import tkinter as tk
 import random
+import math
+
 arayüz = tk.Tk()
-arayüz.title("Şifre")
+arayüz.title("Integer Factorization")
 arayüz.geometry("400x200")
 
 def factorize(n):
-
     factors = []
-    d = 2
 
-    while n > 1:
-        # Try to divide by small primes using trial division
-        while n % d == 0:
+    # Trial division to quickly remove small prime factors
+    d = 2
+    while d * d <= n:
+        if n % d == 0:
             factors.append(d)
             n //= d
+        else:
+            d += 1
 
-        # If n is still not 1, use Pollard's Rho algorithm
-        if n > 1:
-            x = random.randint(2, n-1)
-            y = x
-            c = random.randint(1, n-1)
-            g = 1
+    # If n is a prime number
+    if n > 1:
+        factors.append(n)
 
-            while g == 1:
-                x = (x*x + c) % n
-                y = (y*y + c) % n
-                y = (y*y + c) % n
-                g = gcd(abs(x-y), n)
-                #print("g",g)
+    return factors
 
-            # If Pollard's Rho found a non-trivial factor, add it to the list of factors
-            if g != n:
-                factors += factorize(g)
-                factors += factorize(n//g)
-                break
+def pollard_rho(n):
+    if n == 1:
+        return []
 
-            # If Pollard's Rho failed, increment d and try trial division again
-            else:
-                d += 1
+    def f(x):
+        return (x * x + 1) % n
 
-    return sorted(factors)
+    factors = []
 
-def gcd(a, b):
-    if b == 0:
-        return a
+    while True:
+        x = random.randint(2, n - 1)
+        y = x
+        d = 1
+
+        while d == 1:
+            x = f(x)
+            y = f(f(y))
+            d = math.gcd(abs(x - y), n)
+
+        if d != n:
+            factors.extend(factorize(d))
+            factors.extend(factorize(n // d))
+            break
+
+    return factors
+
+def factorize_large_number():
+    if y.get().isdigit():
+        kullan = int(y.get())
+        factors = pollard_rho(kullan)
+        result.config(text=str(factors), fg="red")
     else:
-        return gcd(b, a % b)
+        result.config(text="You entered the wrong type. Please enter an integer", fg="red")
 
-def giris_komut():
- if y.get().isdigit():
-    kullan = int(y.get())
-    factors = factorize(kullan)
-    
-    result.config(text=str(factors),fg="red") 
- 
 kullanici = tk.Label(text="Enter an integer:")
-kullanici.place(x=20,y=10)
+kullanici.place(x=20, y=10)
 
-y= tk.StringVar()
+y = tk.StringVar()
 kullanici_girisi = tk.Entry(textvariable=y)
-kullanici_girisi.place(x=130,y=10)
+kullanici_girisi.place(x=130, y=10)
 
-giris = tk.Button(text="Enter",command=giris_komut)
-giris.place(x=150,y=55)
-
+giris = tk.Button(text="Enter", command=factorize_large_number)
+giris.place(x=150, y=55)
 
 result = tk.Label(text="", font="Verdana 10 bold")
-result.place(x=100,y=95)
-
+result.place(x=100, y=95)
 
 arayüz.mainloop()
