@@ -53,16 +53,19 @@ def pollard_rho(n):
 def factorize_large_number():
     if y.get().isdigit():
         kullan = int(y.get())
-        factors = pollard_rho(kullan)
-        result.config(text=str(factors), fg="red")
+        if kullan<=1:
+            result.config(text="Please enter an integer value greater than 1", fg="red")
+        else:
+            factors = pollard_rho(kullan)
+            result.config(text=str(factors), fg="red")
     else:
         result.config(text="You entered the wrong type. Please enter an integer", fg="red")
 
-kullanici = tk.Label(text="Enter an integer:")
+kullanici = tk.Label(justify = tk.CENTER, text="Enter an integer:")
 kullanici.place(x=20, y=10)
 
 y = tk.StringVar()
-kullanici_girisi = tk.Entry(textvariable=y)
+kullanici_girisi = tk.Entry(justify= tk.CENTER, textvariable=y)
 kullanici_girisi.place(x=130, y=10)
 
 giris = tk.Button(text="Enter", command=factorize_large_number)
